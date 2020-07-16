@@ -1,0 +1,51 @@
+#!/bin/bash
+# ---------------------------------------------------------------------------
+# Pideck
+#
+#  This program is the main entry point.
+#
+# ---------------------------------------------------------------------------
+
+
+# ----------------------------- CONFIG -------------------------------------
+
+# where to search for music. Can be directories, .pls files or .m3u files
+# For multiple entries, each must have its own -l prefix within the quotes
+LIBRARY="-l /home/pi/Music"
+
+# experimental crate scanning, choose one script and uncomment LIBRARY
+#source /usr/share/pideck/crate_scan_1
+#source /usr/share/pideck/crate_scan_2
+#LIBRARY="${CRATES[@]}"
+
+# the audio backend to use "alsa" or "jackd"
+BACKEND="alsa"
+
+# the sample rate to use with the ALSA backend
+SAMPLERATE="48000"
+
+# the import script to use
+IMPORT="/home/pi/xwax-plus/import"
+
+# the scan script to use "xwax-scan" or "xwax-bpm-scan"
+SCAN="/usr/share/xwax/xwax-bpm-scan"
+#SCAN="/home/pi/pideck-main/xwax-scan"
+#------------------------------------------------------------------------------
+
+# kill everything first
+killall --wait xwax
+killall --wait jackd
+killall --wait /usr/bin/jackd
+killall --wait python
+killall --wait lxpanel
+echo -e "\n"
+
+#start card autodetection script
+source /home/pi/pideck/cards_autodetect
+
+sleep 1
+
+ echo -e "\nNow we are ready to start xwax:\n"
+ echo "\n$XCARD"
+ echo "xwax -i $IMPORT -s $SCAN -k -q 89 -g 630x480 --no-decor $DICER -m $BUFFER -r $SAMPLERATE $XCARD $LIBRARY"
+ xwax -i $IMPORT -s $SCAN -k -q 99 -g 630x480 --no-decor $DICER -m $BUFFER -r $SAMPLERATE $XCARD $LIBRARY
